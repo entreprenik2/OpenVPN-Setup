@@ -1,4 +1,4 @@
-local LOCALIP
+# local LOCALIP
 dev tun
 proto udp
 port 1194
