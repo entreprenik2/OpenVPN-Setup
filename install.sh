@@ -72,7 +72,8 @@ information for the server. Press 'Enter' to skip a field." 8 78
 ./build-key-server server
 
 # Generate Diffie-Hellman key exchange
-./build-dh
+$OPENSSL dhparam -dsaparam -out ${KEY_DIR}/dh${KEY_SIZE}.pem ${KEY_SIZE}
+#./build-dh
 
 # Generate static HMAC key to defend against DDoS
 openvpn --genkey --secret keys/ta.key
