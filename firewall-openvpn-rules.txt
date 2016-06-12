@@ -1,3 +1,5 @@
 #!/bin/sh
 
 iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source LOCALIP
+iptables -P FORWARD ACCEPT
+iptables --table nat -A POSTROUTING -o eth0 -j MASQUERADE
