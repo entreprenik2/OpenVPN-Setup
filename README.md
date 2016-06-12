@@ -41,7 +41,7 @@ ufw enable
 Then download the latest setup script via the command line with:
 
 ```shell
-cd
+cd /home/pi
 git clone git://github.com/entreprenik2/OpenVPN-Setup
 ```
 
