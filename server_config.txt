@@ -31,7 +31,12 @@ user nobody
 group nogroup
 persist-key
 persist-tun
+# if you want logging:
 status /var/log/openvpn-status.log 20
 log /var/log/openvpn.log
 verb 1
+# if you DONT want logging:
+# log /dev/null
+# status /dev/null
+# verb 0
 # This configuration file was originally written by Lauren Orsini at ReadWrite.
