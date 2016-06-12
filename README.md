@@ -30,12 +30,6 @@ sudo su
 apt-get update
 apt-get upgrade
 apt-get install git
-apt-get install ufw
-
-ufw allow 1194/udp
-ufw allow 1194/tcp
-
-ufw enable
 ```
 
 Then download the latest setup script via the command line with:
