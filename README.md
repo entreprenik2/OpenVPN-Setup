@@ -16,23 +16,8 @@ would like to set up OpenVPN on Raspbian Wheezy, use the Wheezy branch.
 Prerequisites
 -------------
 
-To follow this guide and use the script to setup OpenVPN, you will need to have
-a Raspberry Pi Model B or later with an ethernet port, an SD or microSD card
-(depending on the model) with Raspbian installed, a power adapter appropriate to
- the power needs of your model, and an ethernet cable to connect your Pi to your
-router or gateway. It is recommended that you use a fresh image of Raspbian
-Jessie Lite or Wheezy from https://raspberrypi.org/downloads, but if you don't,
-be sure to make a backup image of your existing installation before proceeding.
-You will also need to setup your Pi with a static IP address (see either source
-  1 or 2 at the bottom of this Readme) and have your router forward port 1194
-  (varies by model & manufacturer; consult your router manufacturer's
-  documentation to do this). You should also find your Pi's local IP address on
-  your network and the public IP address of your network and write them down
-  before beginning. Enabling SSH on your Pi is also highly recommended, so that
-  you can run a very compact headless server without a monitor or keyboard and
-  be able to access it even more conveniently (This is also covered by source 2)
-  . And last but not least, you will need to be logged in under the default
-  user pi,  so be sure to change pi's user password from the default.
+1. Router forward port 1194
+2. [ModMyPi: How to give your Raspberry Pi a Static IP Address](https://www.modmypi.com/blog/tutorial-how-to-give-your-raspberry-pi-a-static-ip-address)
 
 Server-Side Setup
 -----------------
@@ -41,24 +26,31 @@ You can download the OpenVPN setup script directly through the terminal or SSH u
 Git. If you don't already have it, update your APT repositories and install it:
 
 ```shell
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install git
+sudo su
+apt-get update
+apt-get upgrade
+apt-get install git
+apt-get install ufw
+
+ufw allow 1194/udp
+ufw allow 1194/tcp
+
+ufw enable
 ```
 
 Then download the latest setup script via the command line with:
 
 ```shell
 cd
-git clone git://github.com/StarshipEngineer/OpenVPN-Setup
+git clone git://github.com/entreprenik2/OpenVPN-Setup
 ```
 
 Execute the script with:
 
 ```shell
 cd OpenVPN-Setup
-sudo chmod +x openvpnsetup.sh
-sudo ./openvpnsetup.sh
+chmod +x openvpnsetup.sh
+./openvpnsetup.sh
 ```
 
 The script will show you a menu of options. If this is your first time running the script,
@@ -115,28 +107,6 @@ To generate additional client .ovpn profiles at any time for other devices you'd
 to the VPN, cd into OpenVPN-Setup and execute the setup script, choose menu option 02, and repeat
 the above steps for each client.
 
-Importing .ovpn Profiles on Client Machines
---------------------------------------------
-
-To move a client .ovpn profile to Windows, use a program like WinSCP or Cyberduck. Note that
-you may need administrator permission to move files to some folders on your Windows machine,
-so if you have trouble transferring the profile to a particular folder with your chosen file
-transfer program, try moving it to your desktop. To move a profile to Android, you can either
-retrieve it on PC and then move it to your device via USB, or you can use an app like Turbo
-FTP & SFTP client to retrieve it directly from your Android device.
-
-To import the profile to OpenVPN on Windows, download the OpenVPN GUI from the community downloads
-section of openvpn.net, install it, and place the profile in the 'config' folder of your OpenVPN
-directory, i.e., in 'C:\Program Files\OpenVPN\config'. To import the profile on Android, install
-the OpenVPN Connect app, select 'Import' from the drop-down menu in the upper right corner of the
-main screen, choose the directory on your device where you stored the .ovpn file, and select the
-file.
-
-After importing, connect to the VPN server on Windows by running the OpenVPN GUI with
-administrator permissions, right-clicking on the icon in the system tray, and clicking 'Connect',
-or on Android by selecting the profile under 'OpenVPN Profile' and pressing 'Connect'. You'll be
-asked to enter the pass phrase you chose. Do so, and you're in! Enjoy your ~$50 USD private VPN.
-
 Removing OpenVPN
 ----------------
 
@@ -145,54 +115,3 @@ pre-installation state, such as if you want to undo a failed installation to try
 you want to remove OpenVPN without installing a fresh Raspbian image, just cd into
 OpenVPN-Setup, execute the setup script, and choose option 03, or make sure remove.sh is
 executable and run it with sudo.
-
-Feedback & Support
---------
-
-I am interested in making this script work for as many people as possible, so I
-welcome any feedback on your experience. If you have problems using it, feel
-free to leave a comment and send me an email and I'll get back to you as soon as
- I can. It may take some time to resolve issues, as the number of users of this
- script has grown and I no longer have as much time to devote towards
- maintenance as when I first wrote the script.
-
-I also encourage discussion of issues, solutions, and ideas on the RaspberryPi.org forum thread for the project [here.](https://www.raspberrypi.org/forums/viewtopic.php?f=36&t=137240&p=911599&hilit=OpenVPN#p911599) I'd love for users to have the opportunity to discuss their ideas with each other!
-
-Contributions
--------------
-
-I'm also interested in improving this script, and will be adding features to it
-over time to make it easier, more intuitive, and more versatile. If you have any
- feature ideas or requests, or are interested in adding your ideas to it,
- testing it on other platforms, or localizing it to another language, please
- comment or leave a pull request. I will be happy to work with you!
-
-If you have found this tool to be useful and want to use
-[this PayPal link](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K99QGVL7KA6ZL)
-to buy me a gallon of gas, I would be very grateful!
-
-If you decide to do so, please also consider supporting OpenVPN; they
-have produced a wonderful open-source product, and all credit for it goes to
-their community and their hard work. All I did was write a little automated
-front-end for its installation on Raspbian.
-
-Thanks
-------
-
-This script automates and streamlines the process outlined by a great many
-people from many corners of the internet for setting up OpenVPN on a Raspberry
-Pi. In particular, thanks go to Lauren Orsini at ReadWrite, who wrote the
-excellent tutorial upon which this script is based (see sources 3 and 4). Thanks
- also go to the Raspberry Pi Foundation, the Raspberry Pi community, and to
- OpenVPN.
-
-Sources
--------
-
-1: [ModMyPi: How to give your Raspberry Pi a Static IP Address](https://www.modmypi.com/blog/tutorial-how-to-give-your-raspberry-pi-a-static-ip-address)
-
-2: [ReadWrite: 5 Pointers To Supercharge Your Raspberry Pi Projects](http://readwrite.com/2014/04/09/raspberry-pi-projects-ssh-remote-desktop-static-ip-tutorial?utm_content=readwrite3-orionautotweet&awesm=readwr.it_b1UN&utm_campaign=&utm_medium=readwr.it-twitter&utm_source=t.co#awesm=~oAXilI0BMOHsS3)
-
-3: [ReadWrite: Building A Raspberry Pi VPN Part 1](http://readwrite.com/2014/04/10/raspberry-pi-vpn-tutorial-server-secure-web-browsing)
-
-4: [ReadWrite: Building A Raspberry Pi VPN Part 2](http://readwrite.com/2014/04/11/building-a-raspberry-pi-vpn-part-two-creating-an-encrypted-client-side#awesm=~oB89WBfWrt21bV)
