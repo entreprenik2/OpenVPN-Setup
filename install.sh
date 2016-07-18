@@ -84,6 +84,33 @@ if [ $ENCRYPT = 2048 ]; then
  sed -i 's:dh1024:dh2048:' /etc/openvpn/server.conf
 fi
 
+# Set your primary domain name server address(es)
+DNS_CHOICE=$(whiptail --inputbox "Which DNS servers do you want to use? \ 
+(separated by spaces)" \
+8 78 --title "Setup OpenVPN" 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus = 0 ]; then
+	read -a DNS_ARRAY <<< $DNS_CHOICE
+	for i in "${DNS_ARRAY[@]}"
+	do
+	   echo "push \"dhcp-option DNS $i\"" >> /etc/openvpn/server.conf
+	done
+else
+ whiptail --title "Setup OpenVPN" --infobox "Cancelled" 8 78
+ exit
+fi
+
+# Write remaining config using the second template .txt file
+cat /home/pi/OpenVPN-Setup/server_config2.txt >> /etc/openvpn/server.conf
+
+# Set up logging
+if (whiptail --title "Setup OpenVPN" --yesno "Do you want logging ENABLED? \
+continue?" 8 78) then
+	cat /home/pi/OpenVPN-Setup/server_config_logging_yes.txt >> /etc/openvpn/server.conf
+else
+	cat /home/pi/OpenVPN-Setup/server_config_logging_no.txt >> /etc/openvpn/server.conf
+fi
+
 # Enable forwarding of internet traffic
 sed -i '/#net.ipv4.ip_forward=1/c\
 net.ipv4.ip_forward=1' /etc/sysctl.conf

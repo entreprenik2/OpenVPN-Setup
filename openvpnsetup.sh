@@ -11,10 +11,11 @@ askreboot() {
 exitstatus=0
 while [ $exitstatus = 0 ]
 do
-	CHOICE=$(whiptail --title "OpenVPN-Setup" --menu "Setup options:" 16 78 3 \
+	CHOICE=$(whiptail --title "OpenVPN-Setup" --menu "Setup options:" 16 78 4 \
 	"01" "Setup OpenVPN on your system" \
-	"02" "Generate a client profile with MakeOVPN" \
-	"03" "Remove OpenVPN and revert your system to a pre-installation state" 3>&2 2>&1 1>&3)
+	"01" "RECONFIGURE OpenVPN on your system" \
+	"03" "Generate a client profile with MakeOVPN" \
+	"04" "Remove OpenVPN and revert your system to a pre-installation state" 3>&2 2>&1 1>&3)
 
 	case "${CHOICE}" in
 		01)
@@ -22,10 +23,15 @@ do
 			sudo ./install.sh
 			askreboot
 		;;
-		02)
-			./MakeOVPN.sh
+		01)
+			sudo chmod +x reconfigure.sh
+			sudo ./reconfigure.sh
+			askreboot
 		;;
 		03)
+			./MakeOVPN.sh
+		;;
+		04)
 			sudo ./remove.sh
 			askreboot
 		;;
