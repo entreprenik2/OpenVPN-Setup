@@ -130,6 +130,16 @@ sed 's/PUBLICIP/'$PUBLICIP'/' </home/pi/OpenVPN-Setup/Default.txt >/etc/openvpn/
 mkdir /home/pi/ovpns
 chmod 777 -R /home/pi/ovpns
 
+# Store setup variables
+mkdir /home/pi/OpenVPN
+chmod 777 -R /home/pi/OpenVPN
+cd /home/pi/OpenVPN
+echo "LOCALIP=$LOCALIP" > vars
+echo "PUBLICIP=$PUBLICIP" >> vars
+echo "DNS_CHOICE=$DNS_CHOICE" >> vars
+echo "ENCRYPT=$ENCRYPT" >> vars
+
+
 # Make other scripts in the package executable
 cd /home/pi/OpenVPN-Setup
 sudo chmod +x MakeOVPN.sh
