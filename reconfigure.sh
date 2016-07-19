@@ -12,8 +12,9 @@ else
 fi
 
 # Ask user for Local IP address or use previous value
-if (whiptail --title "Setup OpenVPN" --yesno "Change LOCAL IP?" 8 78) then
-	# Read the local and public IP addresses from the user
+if (whiptail --title "Setup OpenVPN" --yesno "Change LOCAL IP? \
+	Current: $LOCALIP" 8 78) then
+	# Read the local address from the user
 	LOCALIP=$(whiptail --inputbox "What is your Raspberry Pi's LOCAL IP address?" \
 	8 78 --title "Setup OpenVPN" 3>&1 1>&2 2>&3)
 	exitstatus=$?
@@ -28,8 +29,9 @@ else
 fi
 
 # Ask user for Public IP address or use previous value
-if (whiptail --title "Setup OpenVPN" --yesno "Change PUBLIC IP?" 8 78) then
-	# Read the local and public IP addresses from the user
+if (whiptail --title "Setup OpenVPN" --yesno "Change PUBLIC IP? \
+	Current: $PUBLICIP" 8 78) then
+	# Read the public address from the user
 	PUBLICIP=$(whiptail --inputbox "What is your Raspberry Pi's PUBLIC IP address?" \
 	8 78 --title "Setup OpenVPN" 3>&1 1>&2 2>&3)
 	exitstatus=$?
@@ -84,11 +86,12 @@ sed 's/LOCALIP/'$LOCALIP'/' </home/pi/OpenVPN-Setup/server_config.txt >/etc/open
 #     done
 # fi
 
-sed -i "" "s:dh1024:dh$KEY_SIZE:" /etc/openvpn/server.conf.tmp
+sed -i "" "s:dh1024:dh$ENCRYPT:" /etc/openvpn/server.conf.tmp
 
 # Ask user for DNS Server addresses or use previous value
 read -a DNS_ARRAY <<< $DNS_CHOICE
-if (whiptail --title "Setup OpenVPN" --yesno "Change DNS servers?" 8 78) then
+if (whiptail --title "Setup OpenVPN" --yesno "Change DNS servers? \
+	Current: $DNS_CHOICE" 8 78) then
 	# Read 
 	DNS_CHOICE=$(whiptail --inputbox "Which DNS servers do you want to use? \ 
 	(separated by spaces)" \
@@ -114,15 +117,29 @@ done
 cat /home/pi/OpenVPN-Setup/server_config2.txt >> /etc/openvpn/server.conf.tmp
 
 # Set up logging
-if (whiptail --title "Setup OpenVPN" --yesno "Do you want logging ENABLED? \
-continue?" 8 78) then
-	cat /home/pi/OpenVPN-Setup/server_config_logging_yes.txt >> /etc/openvpn/server.conf.tmp
-else
-	cat /home/pi/OpenVPN-Setup/server_config_logging_no.txt >> /etc/openvpn/server.conf.tmp
+if (whiptail --title "Setup OpenVPN" --yesno "Change Logging? \
+	Current: $LOGGING" 8 78) then
+	# Read
+	if (whiptail --title "Setup OpenVPN" --yesno "Do you want logging ENABLED?" 8 78) then
+		# if you want logging:
+		echo "log /var/log/openvpn.log" >> /etc/openvpn/server.conf.tmp
+		echo "status /var/log/openvpn-status.log 20" >> /etc/openvpn/server.conf.tmp
+		echo "verb 1" >> /etc/openvpn/server.conf.tmp
+
+		LOGGING="1"
+	else
+		# if you DONT want logging:
+		echo "log /dev/null" >> /etc/openvpn/server.conf.tmp
+		echo "status /dev/null" >> /etc/openvpn/server.conf.tmp
+		echo "verb 0" >> /etc/openvpn/server.conf.tmp
+
+		LOGGING="0"
+	fi
 fi
+whiptail --title "Setup OpenVPN" --infobox "Logging: $LOGGING" 8 78
 
 # Replace the previous config with the new one
-cp /etc/openvpn/server.conf /etc/openvpn/server.conf.prev
+mv /etc/openvpn/server.conf /etc/openvpn/server.conf.prev
 mv /etc/openvpn/server.conf.tmp /etc/openvpn/server.conf
 rm /etc/openvpn/server.conf.prev
 
@@ -136,6 +153,7 @@ echo "LOCALIP=$LOCALIP" > vars
 echo "PUBLICIP=$PUBLICIP" >> vars
 echo "DNS_CHOICE=$DNS_CHOICE" >> vars
 echo "ENCRYPT=$ENCRYPT" >> vars
+echo "LOGGING=$LOGGING" >> vars
 
 whiptail --title "Setup OpenVPN" --msgbox "Configuration complete. Restart \
 system to apply changes and start VPN server." 8 78

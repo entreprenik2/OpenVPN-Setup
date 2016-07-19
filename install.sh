@@ -104,11 +104,20 @@ fi
 cat /home/pi/OpenVPN-Setup/server_config2.txt >> /etc/openvpn/server.conf
 
 # Set up logging
+LOGGING="0"
 if (whiptail --title "Setup OpenVPN" --yesno "Do you want logging ENABLED? \
 continue?" 8 78) then
-	cat /home/pi/OpenVPN-Setup/server_config_logging_yes.txt >> /etc/openvpn/server.conf
+	# if you want logging:
+	echo "log /var/log/openvpn.log" >> /etc/openvpn/server.conf
+	echo "status /var/log/openvpn-status.log 20" >> /etc/openvpn/server.conf
+	echo "verb 1" >> /etc/openvpn/server.conf
+
+	LOGGING="1"
 else
-	cat /home/pi/OpenVPN-Setup/server_config_logging_no.txt >> /etc/openvpn/server.conf
+	# if you DONT want logging:
+	echo "log /dev/null" >> /etc/openvpn/server.conf
+	echo "status /dev/null" >> /etc/openvpn/server.conf
+	echo "verb 0" >> /etc/openvpn/server.conf
 fi
 
 # Enable forwarding of internet traffic
@@ -138,7 +147,7 @@ echo "LOCALIP=$LOCALIP" > vars
 echo "PUBLICIP=$PUBLICIP" >> vars
 echo "DNS_CHOICE=$DNS_CHOICE" >> vars
 echo "ENCRYPT=$ENCRYPT" >> vars
-
+echo "LOGGING=$LOGGING" >> vars
 
 # Make other scripts in the package executable
 cd /home/pi/OpenVPN-Setup

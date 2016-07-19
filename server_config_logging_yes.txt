@@ -1,4 +1,0 @@
-# if you want logging:
-status /var/log/openvpn-status.log 20
-log /var/log/openvpn.log
-verb 1
